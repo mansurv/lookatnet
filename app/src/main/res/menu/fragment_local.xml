@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/property"
+        android:title="@string/property"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/listMode"
+        android:title="@string/list_mode"
+        android:icon="@drawable/baseline_view_list_yellow_24"
+        app:showAsAction="ifRoom" />
+</menu>

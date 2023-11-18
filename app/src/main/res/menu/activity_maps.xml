@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:com.netmontools.lookatnet="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.netmontools.lookatnet.utils.map.MapsActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_mode_settings"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/baseline_map_yellow24"
+        android:visible="true"
+        android:title="@string/map_mode_setting"
+
+        tools:ignore="AppCompatResource">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/action_satellite_mode"
+                    android:title="@string/action_satellite_mode"
+                    android:checked="false"
+                    app:showAsAction="ifRoom"/>
+                <item android:id="@+id/action_scheme_mode"
+                    android:title="@string/action_scheme_mode"
+                    android:checked="false"
+                    app:showAsAction="ifRoom"/>
+                <item android:id="@+id/action_hybrid_mode"
+                    android:title="@string/action_hybrid_mode"
+                    android:checked="false"
+                    app:showAsAction="ifRoom"/>
+            </group>
+        </menu>
+    </item>
+
+</menu>
