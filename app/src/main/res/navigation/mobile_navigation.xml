@@ -8,7 +8,22 @@
         android:id="@+id/nav_local"
         android:name="com.netmontools.lookatnet.ui.local.view.LocalFragment"
         android:label="Local files"
-        tools:layout="@layout/fragment_local" />
+        tools:layout="@layout/fragment_local" >
+        <action
+            android:id="@+id/action_nav_local_to_nav_image"
+            app:destination="@id/nav_image" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_image"
+        android:name="com.netmontools.lookatnet.ui.local.view.ImageFragment"
+        android:label="@string/menu_image_view"
+        tools:layout="@layout/fragment_log" >
+        <action
+            android:id="@+id/action_nav_image_to_nav_local"
+            app:destination="@id/nav_local" />
+    </fragment>
+
 
     <fragment
         android:id="@+id/nav_remote"

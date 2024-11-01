@@ -30,6 +30,9 @@ android {
             buildConfigField "boolean", "USE_LOG", "true"
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
     namespace 'com.netmontools.lookatnet'
 }
 
@@ -63,6 +66,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation"com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
 
     annotationProcessor "androidx.room:room-compiler:2.6.0"
 

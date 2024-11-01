@@ -28,6 +28,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -69,8 +71,7 @@ public class  LocalFragment extends Fragment {
     }
 
     public static LocalFragment newInstance(int index) {
-        LocalFragment fragment = new LocalFragment();
-        return fragment;
+        return new LocalFragment();
     }
 
     @Override
@@ -231,34 +232,41 @@ public class  LocalFragment extends Fragment {
                     }
                 }
 
-                if (!isSelected) {
-                    if (!point.isFile) {
-                        localViewModel.update(point);
-                        localRefreshLayout.setRefreshing(true);
-                        if (point.getName() != null) {
-                            String pointName = point.getName();
-                            mainViewModel.updateActionBarTitle(pointName);
-                        }
-                    } else {
-                        try {
-                            assert point.getPath() != null;
-                            File file = new File(point.getPath());
-                            if (file.exists() && (file.isFile())) {
-                                String ext = SimpleUtils.getExtension(file.getName());
-                                if (ext.equalsIgnoreCase("fb2")) {
-                                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                                    intent.setType("*/*");
-                                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    Intent chosenIntent = Intent.createChooser(intent, "Choose file...");
-                                    startActivity(chosenIntent);
-                                } else {
-                                    SimpleUtils.openFile(App.instance, file);
-                                }
+                if (!point.isFile) {
+                    localViewModel.update(point);
+                    localRefreshLayout.setRefreshing(true);
+                    if (point.getName() != null) {
+                        String pointName = point.getName();
+                        mainViewModel.updateActionBarTitle(pointName);
+                    }
+                } else {
+                    try {
+                        assert point.getPath() != null;
+                        File file = new File(point.getPath());
+                        if (file.exists() && (file.isFile())) {
+                            String ext = SimpleUtils.getExtension(file.getName());
+                            if (ext.equals("jpg") || (ext.equals("jpeg")
+                                    || (ext.equals("bmp") || (ext.equals("png"))))) {
+                                NavController navController =
+                                        Navigation.findNavController(requireActivity(),
+                                                R.id.nav_host_fragment);
+
+                                Bundle bundle= new Bundle();
+                                bundle.putString("arg", file.getPath());
+                                navController.navigate(R.id.action_nav_local_to_nav_image, bundle);
+                            }else if (ext.equalsIgnoreCase("fb2")) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setType("*/*");
+                                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                Intent chosenIntent = Intent.createChooser(intent, "Choose file...");
+                                startActivity(chosenIntent);
+                            } else {
+                                SimpleUtils.openFile(App.instance, file);
                             }
-                        } catch (NullPointerException npe) {
-                            npe.getMessage();
                         }
+                    } catch (NullPointerException npe) {
+                        npe.getMessage();
                     }
                 }
             }
@@ -303,14 +311,14 @@ public class  LocalFragment extends Fragment {
             mainViewModel.updateActionBarTitle(LocalRepository.rootPath);
         } else mainViewModel.updateActionBarTitle(actionBarTitle);
 
-        if (isListMode == false) {
-            //recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-            recyclerView.setLayoutManager(layoutManager);
-            //item.setIcon(R.drawable.baseline_view_list_yellow_24);
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            //item.setIcon(R.drawable.baseline_view_column_yellow_24);
-        }
+//        if (isListMode == false) {
+//            //recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+//            recyclerView.setLayoutManager(layoutManager);
+//            //item.setIcon(R.drawable.baseline_view_list_yellow_24);
+//        } else {
+//            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//            //item.setIcon(R.drawable.baseline_view_column_yellow_24);
+//        }
     }
     private void deleteFolder() {
         confirmDelete.instantiate().show(requireActivity().getSupportFragmentManager(), "confirm delete");

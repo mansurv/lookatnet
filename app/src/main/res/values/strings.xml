@@ -104,4 +104,5 @@
     <string name="property">Property</string>
     <string name="map_mode_setting">Map mode settings</string>
     <string name="list_mode">List Mode</string>
+    <string name="menu_image_view">menu image view</string>
 </resources>
