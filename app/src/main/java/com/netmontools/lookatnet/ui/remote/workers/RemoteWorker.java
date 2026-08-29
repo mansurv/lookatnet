@@ -70,16 +70,17 @@ public class RemoteWorker extends Worker {
                 startIP = lton((ntol(subnetIP)) + i);
                 s = (scanLan(startIP));
                 if (!s.equals("")) {
-                    String[] splitted = s.split(" +");
+                      String[] splitted = s.split(" +");
                     int len = splitted.length;
-                    if (splitted[0].equals("-1")) {
-                        Data outputData = new Data.Builder()
-                                .putString("error", splitted[1])
-                                .build();
-
-                        return failure(outputData);
-                    }
-                    if (splitted[len - 1].equals("0")) {
+//                    if (splitted[0].equals("-1")) {
+//                        Data outputData = new Data.Builder()
+//                                .putString("error", splitted[1])
+//                                .build();
+//
+//                        return failure(outputData);
+//                    }
+                    //if (splitted[len - 1].equals("0")) {
+                    if (splitted[len - 1].equals("-1")) {
                         remote = new RemoteModel();
                         remote.setBssid(currentBssid);
                         remote.setName(splitted[1]);

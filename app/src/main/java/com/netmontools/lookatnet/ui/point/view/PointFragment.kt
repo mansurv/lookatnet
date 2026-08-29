@@ -342,6 +342,7 @@ class PointFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
     }*/
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
 
