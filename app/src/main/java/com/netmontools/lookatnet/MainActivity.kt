@@ -10,29 +10,26 @@ import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.view.KeyEvent
 import android.view.Menu
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.preference.PreferenceManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
 import com.netmontools.lookatnet.utils.LogSystem
 import com.netmontools.lookatnet.utils.SimpleUtils
-import com.netmontools.lookatnet.utils.StorageHelper
-import com.netmontools.lookatnet.utils.StorageHelper.MountDevice
 import java.io.File
 import java.io.FileFilter
-import java.util.*
 import java.util.regex.Pattern
 
-class MainActivity : AppCompatActivity() {
+ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var viewModel: MainViewModel
 
@@ -41,12 +38,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
+        val navController = this.findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navView, navController)
 
-        telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        telephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkStoragePermission()
             checkLocationPermission()
@@ -63,51 +59,50 @@ class MainActivity : AppCompatActivity() {
                 getApplicationContext().getFilesDir().toString() + "/log.dat",
                 "log1.dat"
             )
-            if (Build.VERSION.SDK_INT >= 22) {
-                var remPathSize = 0
-                var extPathSize = 0
-                var temp: String
-                var storages: ArrayList<MountDevice>
-                storages = StorageHelper.getInstance().externalMountedDevices
-                if (storages.size != 0) {
-                    extPathSize = storages.size
-                    sp.edit().putInt("ext_size", extPathSize).apply()
-                    extSDPath = arrayOfNulls(extPathSize)
-                    for (i in 0 until extPathSize) {
-                        temp = storages[i].path
-                        extSDPath[i] = temp
-                        temp = temp.substring(temp.lastIndexOf("/") + 1)
-                        if (temp.equals(Integer.toString(i), ignoreCase = true)) temp =
-                            "sdcard$temp"
-                        sp.edit().putString("storage" + (i + 1), temp).apply()
-                        sp.edit().putString("path_idx" + (i + 1), extSDPath[i]).apply()
-                    }
-                }
-                if (StorageHelper.getInstance().removableMountedDevices.also {
-                        storages = it
-                    }.size != 0) {
-                    remPathSize = storages.size
-                    sp.edit().putInt("rem_size", remPathSize).apply()
-                    remSDPath = arrayOfNulls(remPathSize)
-                    for (i in 0 until remPathSize) {
-                        temp = storages[i].path
-                        remSDPath[i] = temp
-                        temp = temp.substring(temp.lastIndexOf("/") + 1)
-                        if (temp.equals(Integer.toString(i), ignoreCase = true)) temp =
-                            "extsd" + Integer.toString(i + extPathSize)
-                        sp.edit().putString("storage" + (i + 1 + extPathSize), temp).apply()
-                        sp.edit().putString("path_idx" + (i + 1 + extPathSize), remSDPath[i])
-                            .apply()
-                    }
-                }
-                if (BuildConfig.USE_LOG) {
-                    LogSystem.logInFile(
-                        TAG,
-                        "\r\n  extPathSize = $extPathSize\r\n  remPathSize = $remPathSize"
-                    )
-                }
-            }
-            if (BuildConfig.USE_LOG) {
+//            if (Build.VERSION.SDK_INT >= 22) {
+//                var remPathSize = 0
+//                var extPathSize = 0
+//                var temp: String
+//                var storages: ArrayList<MountDevice>
+//                storages = StorageHelper.getInstance().externalMountedDevices
+//                if (storages.size != 0) {
+//                    extPathSize = storages.size
+//                    sp.edit().putInt("ext_size", extPathSize).apply()
+//                    extSDPath = arrayOfNulls(extPathSize)
+//                    for (i in 0 until extPathSize) {
+//                        temp = storages[i].path
+//                        extSDPath[i] = temp
+//                        temp = temp.substring(temp.lastIndexOf("/") + 1)
+//                        if (temp.equals(Integer.toString(i), ignoreCase = true)) temp =
+//                            "sdcard$temp"
+//                        sp.edit().putString("storage" + (i + 1), temp).apply()
+//                        sp.edit().putString("path_idx" + (i + 1), extSDPath[i]).apply()
+//                    }
+//                }
+//                if (StorageHelper.getInstance().removableMountedDevices.also {
+//                        storages = it
+//                    }.isNotEmpty()) {
+//                    remPathSize = storages.size
+//                    sp.edit().putInt("rem_size", remPathSize).apply()
+//                    remSDPath = arrayOfNulls(remPathSize)
+//                    for (i in 0 until remPathSize) {
+//                        temp = storages[i].path
+//                        remSDPath[i] = temp
+//                        temp = temp.substring(temp.lastIndexOf("/") + 1)
+//                        if (temp.equals(Integer.toString(i), ignoreCase = true)) temp =
+//                            "extsd" + Integer.toString(i + extPathSize)
+//                        sp.edit().putString("storage" + (i + 1 + extPathSize), temp).apply()
+//                        sp.edit().putString("path_idx" + (i + 1 + extPathSize), remSDPath[i])
+//                            .apply()
+//                    }
+//                }
+//                    LogSystem.logInFile(
+//                        TAG,
+//                        "\r\n  extPathSize = $extPathSize\r\n  remPathSize = $remPathSize"
+//                    )
+//
+//            }
+
                 var numCpuCores = sp.getInt("cpu_cores", 0)
                 if (numCpuCores == 0) {
                     numCpuCores = numCores
@@ -123,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                   Processor: ${sp.getString("proc", "")}
                   Cpu cores: $numCpuCores"""
                 )
-            }
+
             /*if (telephonyManager != null) {
                 if (BuildConfig.USE_LOG) {
                     LogSystem.logInFile(
@@ -134,14 +129,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }*/
             if (checkPlayServices()) {
-                if (BuildConfig.USE_LOG) {
-                    LogSystem.logInFile(TAG, "\r\n Google Play Service availiable ")
-                }
+                LogSystem.logInFile(TAG, "\r\n Google Play Service availiable ")
             }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun checkStoragePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             == PackageManager.PERMISSION_GRANTED
@@ -155,7 +148,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
@@ -169,7 +162,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun checkStatePermission() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -189,27 +182,27 @@ class MainActivity : AppCompatActivity() {
         requestCode: Int, permissions: Array<String>,
         grantResults: IntArray
     ) {
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQUEST_STORAGE_PERMISSION -> {
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (BuildConfig.USE_LOG) {
                         LogSystem.logInFile(TAG, "\r\n  Storage permission granted")
-                    }
+
                 }
             }
             REQUEST_LOCATION_PERMISSION -> {
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (BuildConfig.USE_LOG) {
+
                         LogSystem.logInFile(TAG, "\r\n  Location permission granted")
-                    }
+
                 }
             }
             REQUEST_STATE_PERMISSION -> {
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (BuildConfig.USE_LOG) {
+
                         LogSystem.logInFile(TAG, "\r\n  State permission granted")
-                    }
+
                 }
             }
         }
@@ -235,9 +228,8 @@ class MainActivity : AppCompatActivity() {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                     ?.show()
             } else {
-                if (BuildConfig.USE_LOG) {
+
                     LogSystem.logInFile(TAG, "\r\n This device is not supported")
-                }
             }
             return false
         }
@@ -256,7 +248,7 @@ class MainActivity : AppCompatActivity() {
             return try {
                 val dir = File("/sys/devices/system/cpu/")
                 val files = dir.listFiles(CpuFilter())
-                files.size
+                files!!.size
             } catch (e: Exception) {
                 e.printStackTrace()
                 1
@@ -277,8 +269,8 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_STATE_PERMISSION = 103
         private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
 
-        lateinit var extSDPath: Array<String?>
-        lateinit var remSDPath: Array<String?>
+        //lateinit var extSDPath: Array<String?>
+        //lateinit var remSDPath: Array<String?>
 
         //var isCancellable = false
         var telephonyManager: TelephonyManager? = null

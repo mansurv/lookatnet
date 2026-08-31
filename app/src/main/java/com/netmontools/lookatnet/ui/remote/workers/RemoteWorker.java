@@ -10,11 +10,8 @@ import androidx.work.WorkerParameters;
 
 import com.netmontools.lookatnet.App;
 import com.netmontools.lookatnet.AppDatabase;
-import com.netmontools.lookatnet.BuildConfig;
-import com.netmontools.lookatnet.ui.remote.model.RemoteFolder;
 import com.netmontools.lookatnet.ui.remote.model.RemoteModel;
 import com.netmontools.lookatnet.ui.remote.model.RemoteModelDao;
-import com.netmontools.lookatnet.utils.LogSystem;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -60,8 +57,6 @@ public class RemoteWorker extends Worker {
         db = App.getInstance().getDatabase();
         RemoteModelDao remoteDao = db.remoteModelDao();
         RemoteModel remote;
-        RemoteFolder folder;
-        App.remoteFolders.clear();
         String url = "smb://";
 
         String s = "";
@@ -69,54 +64,16 @@ public class RemoteWorker extends Worker {
             for (int i = 1; i <= range; i++) {
                 startIP = lton((ntol(subnetIP)) + i);
                 s = (scanLan(startIP));
-                if (!s.equals("")) {
-                      String[] splitted = s.split(" +");
+                if (!s.isEmpty()) {
+                    String[] splitted = s.split(" +");
                     int len = splitted.length;
-//                    if (splitted[0].equals("-1")) {
-//                        Data outputData = new Data.Builder()
-//                                .putString("error", splitted[1])
-//                                .build();
-//
-//                        return failure(outputData);
-//                    }
-                    //if (splitted[len - 1].equals("0")) {
-                    if (splitted[len - 1].equals("-1")) {
-                        remote = new RemoteModel();
-                        remote.setBssid(currentBssid);
-                        remote.setName(splitted[1]);
-                        remote.setAddr(splitted[0]);
-                        //remote.setLogin("");
-                        //remote.setPass("");
-                        remote.isPass = false;
-                        remoteDao.insert(remote);
-                        count++;
-                        folder = new RemoteFolder();
-                        folder.isFile = false;
-                        folder.isHost = true;
-                        folder.setImage(App.host_image);
-                        folder.setName(splitted[1]);
-                        folder.setPath(url + splitted[0] + "/");
-                        App.remoteFolders.add(folder);
-                    } else if (splitted[len - 1].equals("1")) {
-                        remote = new RemoteModel();
-                        remote.setBssid(currentBssid);
-                        remote.setName(splitted[1]);
-                        remote.setAddr(splitted[0]);
-                        //remote.setLogin("");
-                        //remote.setPass("");
-                        remote.isPass = true;
-                        remoteDao.insert(remote);
-                        count++;
-                        folder = new RemoteFolder();
-                        folder.isFile = false;
-                        folder.isHost = true;
-                        folder.setImage(App.host_image);
-                        folder.setName(splitted[1]);
-                        folder.setAddr(splitted[0]);
-                        folder.setPath(url + splitted[0] + "/");
-                        folder.setBssid(currentBssid);
-                        App.remoteFolders.add(folder);
-                    }
+                    remote = new RemoteModel();
+                    remote.setBssid(currentBssid);
+                    remote.setName(splitted[1]);
+                    remote.setAddr(splitted[0]);
+                    remote.isPass = false;
+                    remoteDao.insert(remote);
+                    count++;
                 }
             }
         } catch (InterruptedException ie) {
@@ -172,9 +129,6 @@ public class RemoteWorker extends Worker {
             try {
                 dir = new SmbFile("smb://" + host + "/", auth);
             } catch (MalformedURLException mue) {
-                if (BuildConfig.USE_LOG) {
-                    LogSystem.logInFile(TAG, "  scanLan(), NtlmPasswordAuthentication\n  MalformedURLException: " + mue.getMessage());
-                }
                 return host + " " + host + " -1";
             }
             try {
@@ -187,9 +141,6 @@ public class RemoteWorker extends Worker {
             } catch (SmbException se) {
                 if ((Objects.requireNonNull(se.getMessage()).contains("Logon failure: unknown user name or bad password")) ||
                         (se.getMessage().equalsIgnoreCase("0xc000009a"))) {
-                    if (BuildConfig.USE_LOG) {
-                        LogSystem.logInFile(TAG, "  scanLan(), NtlmPasswordAuthentication\n  SmbException: " + se.getMessage() + "\n  host " + host);
-                    }
                     return host + " " + hostname + " 1";
                 } else {
                     return host + " " + hostname + " -1";
@@ -197,20 +148,12 @@ public class RemoteWorker extends Worker {
             }
         } catch (SocketException se) {
             se.printStackTrace();
-            if (BuildConfig.USE_LOG) {
-                LogSystem.logInFile(TAG, "  scanLan(), global\n  SocketException:  " + se.getMessage());
-            }
+
             return "-1" + se.getMessage();
         } catch (UnknownHostException uhe) {
             uhe.printStackTrace();
-            if (BuildConfig.USE_LOG) {
-                LogSystem.logInFile(TAG, "  scanLan(), global\n  UnknownHostException:  " + uhe.getMessage());
-            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            if (BuildConfig.USE_LOG) {
-                LogSystem.logInFile(TAG, "  scanLan(), global\n  IOException:  " + ioe.getMessage());
-            }
         }
         return "";
     }

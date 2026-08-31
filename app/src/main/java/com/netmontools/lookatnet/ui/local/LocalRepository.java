@@ -12,7 +12,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.netmontools.lookatnet.App;
 import com.netmontools.lookatnet.R;
 import com.netmontools.lookatnet.ui.local.model.Folder;
-import com.netmontools.lookatnet.ui.remote.model.RemoteFolder;
 import com.netmontools.lookatnet.utils.SimpleUtils;
 
 import java.io.File;
@@ -26,7 +25,6 @@ public class  LocalRepository {
     private static MutableLiveData<List<Folder>> liveData;
 
     public static ArrayList<Folder> folders = new ArrayList<Folder>();
-    public static ArrayList<RemoteFolder> remoteFolders = new ArrayList<RemoteFolder>();
 
     public static Drawable host_image, folder_image, file_image;
     public static String rootPath, previousPath, remoteRootPath, remotePreviousPath, remoteCurrentPath;

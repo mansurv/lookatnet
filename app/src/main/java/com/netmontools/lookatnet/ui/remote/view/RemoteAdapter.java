@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.netmontools.lookatnet.R;
-import com.netmontools.lookatnet.ui.remote.model.RemoteFolder;
 import com.netmontools.lookatnet.ui.remote.model.RemoteModel;
 
 import java.util.ArrayList;
@@ -31,8 +30,10 @@ public class RemoteAdapter extends RecyclerView.Adapter<RemoteAdapter.RemoteHold
     @Override
     public void onBindViewHolder(@NonNull RemoteHolder holder, int position) {
         RemoteModel currentPoint = hosts.get(position);
+
         holder.textViewName.setText(currentPoint.getName());
-        holder.textViewAddress.setText(currentPoint.getAddr());
+        String addr = currentPoint.getAddr();
+        holder.textViewAddress.setText(addr != null ? addr : "(нет адреса)");
     }
 
     @Override

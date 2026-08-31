@@ -3,11 +3,8 @@ package com.netmontools.lookatnet.ui.point.repository
 import android.app.Application
 import androidx.lifecycle.LiveData
 import com.netmontools.lookatnet.App
-import com.netmontools.lookatnet.BuildConfig
 import com.netmontools.lookatnet.ui.point.model.DataModel
 import com.netmontools.lookatnet.ui.point.model.DataModelDao
-import com.netmontools.lookatnet.ui.remote.repository.FilesRepository
-import com.netmontools.lookatnet.utils.LogSystem
 import kotlinx.coroutines.*
 
 class PointRepository(application: Application?) {

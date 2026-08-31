@@ -23,13 +23,11 @@
             android:id="@+id/action_nav_image_to_nav_local"
             app:destination="@id/nav_local" />
     </fragment>
-
-
     <fragment
         android:id="@+id/nav_remote"
-        android:name="com.netmontools.lookatnet.ui.remote.view.FilesFragment"
-        android:label="Remote files"
-        tools:layout="@layout/fragment_files" />
+        android:name="com.netmontools.lookatnet.ui.remote.view.RemoteFragment"
+        android:label="@string/tab_text_remote"
+        tools:layout="@layout/fragment_remote" />
 
     <fragment
         android:id="@+id/nav_places"

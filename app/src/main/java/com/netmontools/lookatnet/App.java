@@ -11,7 +11,6 @@ import androidx.room.Room;
 import androidx.work.Configuration;
 
 import com.netmontools.lookatnet.ui.local.model.Folder;
-import com.netmontools.lookatnet.ui.remote.model.RemoteFolder;
 import com.netmontools.lookatnet.ui.remote.model.RemoteModel;
 import com.netmontools.lookatnet.utils.SimpleUtils;
 
@@ -27,7 +26,6 @@ public class App extends Application implements Configuration.Provider {
     private AppDatabase database;
     public static Drawable host_image, folder_image, file_image;
     public static ArrayList<Folder> folders = new ArrayList<Folder>();
-    public static ArrayList<RemoteFolder> remoteFolders = new ArrayList<RemoteFolder>();
     public static ArrayList<RemoteModel> hosts = new ArrayList<RemoteModel>();
     public static String[] share = null;
     public static String rootPath, previousPath, remoteRootPath, remotePreviousPath, remoteCurrentPath;

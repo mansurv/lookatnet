@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.work.Data
@@ -15,7 +14,6 @@ import androidx.work.WorkManager
 import com.netmontools.lookatnet.App
 import com.netmontools.lookatnet.R
 import com.netmontools.lookatnet.ui.point.worker.AddPointWorker
-import com.netmontools.lookatnet.ui.remote.workers.AddWorker
 
 
 class AddPointFragment() : DialogFragment(), DialogInterface.OnClickListener {

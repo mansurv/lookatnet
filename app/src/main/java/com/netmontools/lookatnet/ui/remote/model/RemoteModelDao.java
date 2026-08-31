@@ -11,7 +11,7 @@ import androidx.room.Update;
 import java.util.List;
 
 @Dao
-public interface  RemoteModelDao {
+public interface RemoteModelDao {
     @Query("SELECT * FROM RemoteModel")
     LiveData<List<RemoteModel>> getAll();
 
@@ -32,4 +32,11 @@ public interface  RemoteModelDao {
 
     @Delete
     void delete(RemoteModel remoteDataModel);
+
+    // --- НОВОЕ: upsert по (addr, bssid) ---
+    @Query("UPDATE RemoteModel SET name = :name, bssid = :bssid WHERE addr = :addr AND bssid = :bssid")
+    void updateByAddrAndBssid(String addr, String bssid, String name);
+
+    @Query("DELETE FROM RemoteModel WHERE addr IS NULL")
+    void deleteOrphans();
 }
