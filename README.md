@@ -7,7 +7,6 @@
 ## ✨ Features
 
 - **Local file browsing** — navigate the device filesystem with folder/file filtering
-- **SMB / CIFS support** — connect to remote shares (via Jcifs)
 - **Media previews** — images (Glide + subsampling for large files), videos
 - **Map view** — show saved places on Google Maps (`MapsActivity`)
 - **Recent & bookmarks** — Room database persistence
