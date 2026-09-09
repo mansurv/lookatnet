@@ -2,7 +2,7 @@
 
 > Phone file explorer with location-aware map view
 
-**lookatnet** is an Android file manager that lets you browse local and network (SMB/CIFS) storage, preview files, and visualize places on a Google Map.
+**lookatnet** is an Android file manager that lets you browse local and network storage, preview files, and visualize places on a Google Map.
 
 ## ✨ Features
 
