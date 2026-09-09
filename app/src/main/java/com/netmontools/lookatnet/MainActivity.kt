@@ -1,4 +1,4 @@
- package com.netmontools.lookatnet
+package com.netmontools.lookatnet
 
 import android.Manifest
 import android.annotation.TargetApi
@@ -8,13 +8,13 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.telephony.TelephonyManager
-import android.view.KeyEvent
 import android.view.Menu
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -29,16 +29,21 @@ import java.io.File
 import java.io.FileFilter
 import java.util.regex.Pattern
 
- class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var viewModel: MainViewModel
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
-        val navController = this.findNavController(R.id.nav_host_fragment)
+        
+        // Получаем навигационный контроллер
+        navController = this.findNavController(R.id.nav_host_fragment)
+        
+        // Настройка BottomNavigationView с навигационным контроллером
         NavigationUI.setupWithNavController(navView, navController)
 
         telephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
@@ -59,65 +64,22 @@ import java.util.regex.Pattern
                 getApplicationContext().getFilesDir().toString() + "/log.dat",
                 "log1.dat"
             )
-//            if (Build.VERSION.SDK_INT >= 22) {
-//                var remPathSize = 0
-//                var extPathSize = 0
-//                var temp: String
-//                var storages: ArrayList<MountDevice>
-//                storages = StorageHelper.getInstance().externalMountedDevices
-//                if (storages.size != 0) {
-//                    extPathSize = storages.size
-//                    sp.edit().putInt("ext_size", extPathSize).apply()
-//                    extSDPath = arrayOfNulls(extPathSize)
-//                    for (i in 0 until extPathSize) {
-//                        temp = storages[i].path
-//                        extSDPath[i] = temp
-//                        temp = temp.substring(temp.lastIndexOf("/") + 1)
-//                        if (temp.equals(Integer.toString(i), ignoreCase = true)) temp =
-//                            "sdcard$temp"
-//                        sp.edit().putString("storage" + (i + 1), temp).apply()
-//                        sp.edit().putString("path_idx" + (i + 1), extSDPath[i]).apply()
-//                    }
-//                }
-//                if (StorageHelper.getInstance().removableMountedDevices.also {
-//                        storages = it
-//                    }.isNotEmpty()) {
-//                    remPathSize = storages.size
-//                    sp.edit().putInt("rem_size", remPathSize).apply()
-//                    remSDPath = arrayOfNulls(remPathSize)
-//                    for (i in 0 until remPathSize) {
-//                        temp = storages[i].path
-//                        remSDPath[i] = temp
-//                        temp = temp.substring(temp.lastIndexOf("/") + 1)
-//                        if (temp.equals(Integer.toString(i), ignoreCase = true)) temp =
-//                            "extsd" + Integer.toString(i + extPathSize)
-//                        sp.edit().putString("storage" + (i + 1 + extPathSize), temp).apply()
-//                        sp.edit().putString("path_idx" + (i + 1 + extPathSize), remSDPath[i])
-//                            .apply()
-//                    }
-//                }
-//                    LogSystem.logInFile(
-//                        TAG,
-//                        "\r\n  extPathSize = $extPathSize\r\n  remPathSize = $remPathSize"
-//                    )
-//
-//            }
 
-                var numCpuCores = sp.getInt("cpu_cores", 0)
-                if (numCpuCores == 0) {
-                    numCpuCores = numCores
-                    sp.edit().putString("model", Build.MODEL).apply()
-                    sp.edit().putInt("version", Build.VERSION.SDK_INT).apply()
-                    sp.edit().putString("proc", Build.HARDWARE).apply()
-                    sp.edit().putInt("cpu_cores", numCpuCores).apply()
-                }
-                LogSystem.logInFile(
-                    TAG, """
+            var numCpuCores = sp.getInt("cpu_cores", 0)
+            if (numCpuCores == 0) {
+                numCpuCores = numCores
+                sp.edit().putString("model", Build.MODEL).apply()
+                sp.edit().putInt("version", Build.VERSION.SDK_INT).apply()
+                sp.edit().putString("proc", Build.HARDWARE).apply()
+                sp.edit().putInt("cpu_cores", numCpuCores).apply()
+            }
+            LogSystem.logInFile(
+                TAG, """
                   Device: ${sp.getString("model", "")}     
                   SDK version: ${sp.getInt("version", 0)}
                   Processor: ${sp.getString("proc", "")}
                   Cpu cores: $numCpuCores"""
-                )
+            )
 
             /*if (telephonyManager != null) {
                 if (BuildConfig.USE_LOG) {
@@ -209,15 +171,25 @@ import java.util.regex.Pattern
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items to the action bar если это есть.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
+    // Правильная обработка кнопки Back для двухуровневой навигации
+    override fun onBackPressed() {
+        // Проверяем, можем ли мы вернуться назад в навигационном графе (между вкладками)
+        if (navController.popBackStack()) {
+            return  // Есть предыдущая вкладка - возвращаемся к ней
+        }
+        
+        // Если мы в корне навигации (на nav_local) - закрываем приложение
+        super.onBackPressed()
+    }
+
+    // Этот метод вызывается BottomNavigationView при нажатии на пункты меню
     override fun onSupportNavigateUp(): Boolean {
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        return (NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp())
+        return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     private fun checkPlayServices(): Boolean {
@@ -255,12 +227,7 @@ import java.util.regex.Pattern
             }
         }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            //что-то делаем: завершаем Activity, открываем другую и т.д.
-        }
-        return super.onKeyDown(keyCode, event)
-    }
+    // Удалён метод onKeyDown - он не нужен для современной навигации
 
     companion object {
         private const val TAG = "MainActivity"

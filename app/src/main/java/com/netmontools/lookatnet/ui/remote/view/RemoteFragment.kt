@@ -44,7 +44,6 @@ class RemoteFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        //remoteViewModel.cleanupOrphans()
     }
 
     override fun onCreateView(
@@ -73,6 +72,8 @@ class RemoteFragment : Fragment() {
         remoteViewModel.allRemotes.observe(viewLifecycleOwner, Observer { points ->
             adapter.setHosts(points)
         })
+
+        //remoteViewModel.cleanupOrphans()
 
         setupSwipeRefresh()
         setupItemTouchHelper()
