@@ -40,6 +40,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.netmontools.lookatnet.App;
 import com.netmontools.lookatnet.MainViewModel;
 import com.netmontools.lookatnet.R;
+import com.netmontools.lookatnet.ui.local.FolderSizeRepository;
 import com.netmontools.lookatnet.ui.local.LocalRepository;
 import com.netmontools.lookatnet.ui.local.model.Folder;
 import com.netmontools.lookatnet.ui.local.viewmodel.LocalViewModel;
@@ -115,16 +116,24 @@ public class  LocalFragment extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 try {
-                    File file = new File(LocalRepository.previousPath);
-                    if (!file.getPath().equalsIgnoreCase(LocalRepository.rootPath)) {
-                        if (file.exists()) {
-                            file = new File(Objects.requireNonNull(file.getParent()));
+                    // Корень файлового менеджера: SD-карта (для корня "" parent = null)
+                    File root = new File(android.os.Environment.getExternalStorageDirectory().getPath());
+
+                    String currentPath = LocalRepository.previousPath != null
+                            ? LocalRepository.previousPath
+                            : root.getPath();
+
+                    File file = new File(currentPath);
+                    if (!file.getPath().equals(root.getPath())) {
+                        // Не в корне - подниматься вверх по файловой системе
+                        File parent = file.getParentFile();
+                        if (parent != null && parent.exists()) {
                             Folder fd = new Folder();
-                            fd.isFile = file.isFile();
-                            fd.setName(file.getName());
-                            fd.setPath(file.getPath());
+                            fd.isFile = parent.isFile();
+                            fd.setName(parent.getName());
+                            fd.setPath(parent.getPath());
                             if (fd.isFile) {
-                                fd.setSize(file.length());
+                                fd.setSize(parent.length());
                                 fd.setImage(LocalRepository.file_image);
                             } else {
                                 fd.setSize(0L);
@@ -132,11 +141,11 @@ public class  LocalFragment extends Fragment {
                             }
                             localViewModel.update(fd);
                             localRefreshLayout.setRefreshing(true);
-                            mainViewModel.updateActionBarTitle(file.getName());
+                            mainViewModel.updateActionBarTitle(parent.getName());
                         }
                     } else {
-                        this.setEnabled(false);
-                        requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                        // В корне - выходим из приложения
+                        requireActivity().finish();
                     }
 
                 } catch (NullPointerException npe) {
@@ -208,9 +217,27 @@ public class  LocalFragment extends Fragment {
         localViewModel = new ViewModelProvider.AndroidViewModelFactory(App.getInstance()).create(LocalViewModel.class);
         localViewModel.getAllPoints().observe(getViewLifecycleOwner(), new Observer<List<Folder>>() {
             @Override
-            public void onChanged(List<Folder> points) {
+            public void onChanged(final List<Folder> points) {
                 adapter.setPoints(points);
                 localRefreshLayout.setRefreshing(false);
+                // Запускаем фоновое вычисление размеров для текущего каталога.
+                // Repository обновит каждый Folder в этом списке (по path) и
+                // вызовет onSizeComputed - адаптер перерисуется.
+                final File curDir = new File(LocalRepository.previousPath == null
+                        ? android.os.Environment.getExternalStorageDirectory().getPath()
+                        : LocalRepository.previousPath);
+                if (curDir.isDirectory()) {
+                    FolderSizeRepository sizeRepo = FolderSizeRepository.getInstance(
+                            App.getInstance().getDatabase().folderSizeDao());
+                    sizeRepo.computeSizesIfStale(curDir, points, new FolderSizeRepository.OnSizeComputed() {
+                        @Override
+                        public void onSizeComputed() {
+                            if (getView() != null) {
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
+                }
             }
         });
 
