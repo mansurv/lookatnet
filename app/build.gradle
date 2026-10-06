@@ -6,11 +6,14 @@ android {
         sourceCompatibility = 17
                 targetCompatibility = 17
     }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
     compileSdkVersion 37
 
     defaultConfig {
         applicationId "com.netmontools.lookatnet"
-        minSdkVersion 22
+        minSdkVersion 24
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
@@ -53,7 +56,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.room:room-runtime:2.8.4"
     implementation "androidx.work:work-runtime:2.11.2"
-    implementation "androidx.core:core-ktx:1.19.0"
+    implementation "androidx.core:core-ktx:1.16.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0"
     implementation "androidx.work:work-runtime-ktx:$work_version"
     implementation "androidx.preference:preference:1.2.1"
@@ -63,7 +66,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-places:17.1.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
     implementation"com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
